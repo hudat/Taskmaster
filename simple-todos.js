@@ -2,13 +2,13 @@
 Tasks = new Mongo.Collection("tasks");
 
 if (Meteor.isClient) {
-  // This code only runs on the client
+  // Returns objects in Tasks collections 
   Template.body.helpers({
     tasks: function () {
       return Tasks.find({});
     }
   });
-  // Inside the if (Meteor.isClient) block, right after Template.body.helpers:
+  // Inserting text input into Tasks collection
   Template.body.events({
     "submit .new-task": function (event) {
       // This function is called when the new task form is submitted
@@ -27,10 +27,21 @@ if (Meteor.isClient) {
       return false;
     }
   });
+  // Sort by newest task
   Template.body.helpers({
     tasks: function () {
       // Show newest tasks first
       return Tasks.find({}, {sort: {createdAt: -1}});
+    }
+  });
+  // Event handlers for checked and delete buttons
+  Template.task.events({
+    "click .toggle-checked": function () {
+      // Set the checked property to the opposite of its current value
+      Tasks.update(this._id, {$set: {checked: ! this.checked}});
+    },
+    "click .delete": function () {
+      Tasks.remove(this._id);
     }
   });
 }
