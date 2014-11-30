@@ -2,7 +2,7 @@
 Tasks = new Mongo.Collection("tasks");
 
 if (Meteor.isClient) {
-  // Returns objects in Tasks collections 
+  // Returns objects in Tasks collections
   Template.body.helpers({
     tasks: function () {
       return Tasks.find({});
@@ -25,13 +25,25 @@ if (Meteor.isClient) {
 
       // Prevent default form submit
       return false;
+    },
+    "change .hide-completed input": function (event) {
+      Session.set("hideCompleted", event.target.checked);
     }
   });
+
   // Sort by newest task
   Template.body.helpers({
     tasks: function () {
-      // Show newest tasks first
-      return Tasks.find({}, {sort: {createdAt: -1}});
+      if (Session.get("hideCompleted")) {
+        // If hide completed is checked, filter tasks
+        return Tasks.find({checked: {$ne: true}}, {sort: {createdAt: -1}});
+      } else {
+        // Otherwise, return all of the tasks
+        return Tasks.find({}, {sort: {createdAt: -1}});
+      }
+    },
+    hideCompleted: function () {
+      return Session.get("hideCompleted");
     }
   });
   // Event handlers for checked and delete buttons
