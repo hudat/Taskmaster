@@ -2,6 +2,7 @@
 Tasks = new Mongo.Collection("tasks");
 
 if (Meteor.isClient) {
+  Meteor.subscribe("tasks");
   // Returns objects in Tasks collections
   Template.body.helpers({
     tasks: function () {
@@ -83,3 +84,9 @@ Meteor.methods({
     Tasks.update(taskId, { $set: { checked: setChecked} });
   }
 });
+
+if (Meteor.isServer) {
+  Meteor.publish("tasks", function () {
+    return Tasks.find();
+  });
+}
